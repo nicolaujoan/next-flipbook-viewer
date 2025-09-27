@@ -26,7 +26,6 @@ export default function FolderPage() {
   }, [folder]);
 
   useEffect(() => {
-    console.log("effect loading library")
     detectBackButton(() => {});
     async function loadPdfjs() {
       const pdfjsLib = await import("pdfjs-dist");
@@ -37,7 +36,6 @@ export default function FolderPage() {
   }, []);
 
   useEffect(() => {
-    console.log("effect loading files for folder:", folder);
     loadFiles();
   }, [loadFiles]);
 

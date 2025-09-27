@@ -4,7 +4,7 @@ import { Cross2Icon } from "@radix-ui/react-icons"
 import * as ToastPrimitives from "@radix-ui/react-toast"
 import { cva } from "class-variance-authority";
 
-import { cn } from "@/app/_lib/utils"
+import { cn } from "../../_lib/utils";
 
 const ToastProvider = ToastPrimitives.Provider
 

@@ -1,9 +1,9 @@
 import React, { forwardRef, memo, useCallback, useState } from 'react'
 import HTMLFlipBook from 'react-pageflip'
 import PdfPage from './pdf-page'
-import { useDebounce } from '@/app/_hooks/use-debounce';
-import { cn } from '@/app/_lib/utils';
-import useScreenSize from '@/app/_hooks/use-screensize';
+import { useDebounce } from '../../../../_hooks/use-debounce';
+import { cn } from '../../../../_lib/utils';
+import useScreenSize from '../../../../_hooks/use-screensize';
 const MemoizedPdfPage = memo(PdfPage)
 
 const FlipbookLoader = forwardRef(({ pdfDetails, scale, viewerStates, setViewerStates, viewRange, setViewRange }, ref) => {

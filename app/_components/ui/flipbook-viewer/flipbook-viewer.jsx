@@ -1,7 +1,7 @@
 'use client';
 import React, { useCallback, useRef, useState } from "react";
 import Toolbar from "./toolbar/toolbar";
-import { cn } from "@/app/_lib/utils";
+import { cn } from "../../../_lib/utils";
 import Flipbook from "./flipbook/flipbook";
 import screenfull from 'screenfull';
 import { TransformWrapper } from "react-zoom-pan-pinch";

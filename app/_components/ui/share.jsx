@@ -7,7 +7,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from "@/app/_components/ui/dropdown-menu"
+} from "../../_components/ui/dropdown-menu";
 import { WhatsappShareButton, FacebookShareButton, TwitterShareButton, LinkedinShareButton } from 'react-share';
 
 const Share = ({ asChild, shareUrl, children }) => {

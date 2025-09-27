@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Maximize, Minimize } from 'lucide-react';
 import keyboardjs from 'keyboardjs';
 import Zoom from './zoom';
 import SliderNav from './slider-nav/slider-nav';
-import useScreenSize from '@/app/_hooks/use-screensize';
+import useScreenSize from '../../../../_hooks/use-screensize';
 import Share from '../../share';
 
 const Toolbar = ({ flipbookRef, containerRef, screenfull, pdfDetails, viewerStates, shareUrl, disableShare }) => {

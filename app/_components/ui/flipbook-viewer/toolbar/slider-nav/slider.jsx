@@ -1,8 +1,8 @@
-import { cn } from '@/app/_lib/utils';
+import { cn } from '../../../../../_lib/utils';
 import React, { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
 import HoverItem from './hover-item';
-import { useDebounce } from '@/app/_hooks/use-debounce';
+import { useDebounce } from '../../../../../_hooks/use-debounce';
 
 const Slider = ({ maxSlide = 10, currentSlide, onSlideChange, totalPages }) => {
     const [value, setValue] = useState(1);

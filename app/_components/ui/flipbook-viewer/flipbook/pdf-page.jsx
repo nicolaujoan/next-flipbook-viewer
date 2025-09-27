@@ -1,4 +1,4 @@
-import { cn } from "@/app/_lib/utils";
+import { cn } from "../../../../_lib/utils";
 import React, { forwardRef, memo } from "react";
 import { Page } from "react-pdf";
 

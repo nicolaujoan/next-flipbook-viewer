@@ -1,8 +1,8 @@
 'use client';
 import React, { memo, useState, useEffect, useCallback } from 'react';
-import useRefSize from '@/app/_hooks/use-ref-size';
+import useRefSize from '../../../../_hooks/use-ref-size';
 import FlipbookLoader from './flipbook-loader';
-import { cn } from '@/app/_lib/utils';
+import { cn } from '../../../../_lib/utils';
 import { TransformComponent } from 'react-zoom-pan-pinch';
 import screenfull from 'screenfull';
 

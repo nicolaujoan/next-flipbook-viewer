@@ -95,6 +95,8 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
+https://next-flipbook-viewer.vercel.app/news
+
 ## Special Thanks
 
 Special thanks to the following libraries that made this project possible:

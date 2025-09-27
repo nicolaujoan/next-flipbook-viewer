@@ -35,6 +35,11 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 - **Keyboard Shortcuts**: Use keyboard arrows to navigate through the pages.
 - **Responsive Design**: Optimized for various screen sizes.
 
+## TODO
+- [] Have a home page to organize all the existing folders
+- [] Better styling when presenting a flipbook, more like full screen and also integrate with the QR by hox
+- [] Have a login/register page
+- [] Have a customization page to change the colors and also a an image to organize the flipbooks such as https://riu.cld.bz/RIU-NEWS
 ## Components
 
 ### FlipbookViewer

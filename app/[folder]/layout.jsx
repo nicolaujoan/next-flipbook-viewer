@@ -12,7 +12,7 @@ export default function FolderLayout({ children, params }) {
       <main className="flex-1 p-6">{children}</main>
 
       <footer className="p-4 text-center text-gray-500">
-        © {new Date().getFullYear()} My Flipbook Service
+        © {new Date().getFullYear()} Flipbooks by Joopbox SL
       </footer>
     </div>
   )

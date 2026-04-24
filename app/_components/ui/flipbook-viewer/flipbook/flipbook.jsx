@@ -5,7 +5,6 @@ import useScreenSize from '../../../../_hooks/use-screensize';
 import FlipbookLoader from './flipbook-loader';
 import { cn } from '../../../../_lib/utils';
 import { TransformComponent } from 'react-zoom-pan-pinch';
-import screenfull from 'screenfull';
 
 const Flipbook = memo(({ viewerStates, setViewerStates, flipbookRef, pdfDetails }) => {
     const { ref, width, height, refreshSize } = useRefSize();
@@ -47,8 +46,8 @@ const Flipbook = memo(({ viewerStates, setViewerStates, flipbookRef, pdfDetails 
     }, [shrinkPageLoadingRange, refreshSize]);
 
     useEffect(() => {
-        if (screenfull) screenfull.on('change', handleFullscreenChange);
-        return () => { if (screenfull) screenfull.off('change', handleFullscreenChange); };
+        if (screenfull?.isEnabled) screenfull.on('change', handleFullscreenChange);
+        return () => { if (screenfull?.isEnabled) screenfull.off('change', handleFullscreenChange); };
     }, [handleFullscreenChange]);
 
     return (

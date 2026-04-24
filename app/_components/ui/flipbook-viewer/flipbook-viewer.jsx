@@ -53,7 +53,7 @@ const FlipbookViewer = ({ pdfUrl, shareUrl, className, disableShare }) => {
     )}>
       {pdfLoading && <PdfLoading />}
       <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess} loading={<></>}>
-        {pdfDetails && !pdfLoading && screenfull && (
+        {pdfDetails && !pdfLoading && screenfull !== null && (
           <TransformWrapper
             doubleClick={{ disabled: true }}
             pinch={{ step: 2 }}

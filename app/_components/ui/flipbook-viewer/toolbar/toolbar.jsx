@@ -16,7 +16,8 @@ const Toolbar = ({ flipbookRef, containerRef, screenfull, pdfDetails, viewerStat
 
     const fullScreen = useCallback(() => {
         if (screenfull?.isEnabled) {
-            screenfull.toggle(containerRef.current, { navigationUI: "hide" });
+            screenfull.toggle(containerRef.current, { navigationUI: 'hide' });
+            screenfull.on('error', (event) => console.error('Fullscreen error', event));
         }
     }, [screenfull, containerRef]);
 

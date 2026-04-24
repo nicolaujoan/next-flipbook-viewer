@@ -1,34 +1,39 @@
-import React, { forwardRef, memo, useCallback, useState } from 'react'
+import React, { forwardRef, memo, useCallback } from 'react'
 import HTMLFlipBook from 'react-pageflip'
 import PdfPage from './pdf-page'
 import { useDebounce } from '../../../../_hooks/use-debounce';
 import { cn } from '../../../../_lib/utils';
 import useScreenSize from '../../../../_hooks/use-screensize';
+
 const MemoizedPdfPage = memo(PdfPage)
+
+// Pages kept in canvas on each side of the current page.
+// Mobile gets a tighter window to stay under iOS canvas memory limits.
+const VIEW_AHEAD_DESKTOP = 4;
+const VIEW_AHEAD_MOBILE  = 2;
 
 const FlipbookLoader = forwardRef(({ pdfDetails, scale, viewerStates, setViewerStates, viewRange, setViewRange }, ref) => {
     const { width } = useScreenSize();
-    const debouncedZoom = useDebounce(viewerStates.zoomScale, 500);
-    // Check if page is in View range or in view window >>>>>>>>
-    const isPageInViewRange = (index) => { return index >= viewRange[0] && index <= viewRange[1] };
-    const isPageInView = (index) => { return viewerStates.currentPageIndex === index || viewerStates.currentPageIndex + 1 === index };
+    const isMobile = width > 0 && width < 768;
+    const viewAhead = isMobile ? VIEW_AHEAD_MOBILE : VIEW_AHEAD_DESKTOP;
 
-    // Update pageViewRange on page flip >>>>>>>>
+    const debouncedZoom = useDebounce(viewerStates.zoomScale, 500);
+
+    const isPageInViewRange = (index) => index >= viewRange[0] && index <= viewRange[1];
+    const isPageInView      = (index) => viewerStates.currentPageIndex === index || viewerStates.currentPageIndex + 1 === index;
+
     const onFlip = useCallback((e) => {
         let newViewRange;
         if (e.data > viewerStates.currentPageIndex) {
-            newViewRange = [viewRange[0], Math.max(Math.min(e.data + 4, pdfDetails.totalPages), viewRange[1])]
+            newViewRange = [viewRange[0], Math.max(Math.min(e.data + viewAhead, pdfDetails.totalPages), viewRange[1])];
         } else if (e.data < viewerStates.currentPageIndex) {
-            newViewRange = [Math.min(Math.max(e.data - 4, 0), viewRange[0]), viewRange[1]]
+            newViewRange = [Math.min(Math.max(e.data - viewAhead, 0), viewRange[0]), viewRange[1]];
         } else {
-            newViewRange = viewRange
+            newViewRange = viewRange;
         }
         setViewRange(newViewRange);
-        setViewerStates({
-            ...viewerStates,
-            currentPageIndex: e.data,
-        });
-    }, [viewerStates, viewRange, setViewRange, setViewerStates, pdfDetails.totalPages]);
+        setViewerStates({ ...viewerStates, currentPageIndex: e.data });
+    }, [viewerStates, viewRange, viewAhead, setViewRange, setViewerStates, pdfDetails.totalPages]);
 
     return (
         <div className="relative">
@@ -41,31 +46,29 @@ const FlipbookLoader = forwardRef(({ pdfDetails, scale, viewerStates, setViewerS
                 size="stretch"
                 drawShadow={false}
                 flippingTime={700}
-                usePortrait={false}
+                usePortrait={isMobile}
+                singlePage={isMobile}
                 showCover={true}
                 showPageCorners={false}
                 onFlip={onFlip}
-                disableFlipByClick={width < 768 ? true : false}
+                disableFlipByClick={isMobile}
                 className={cn(viewerStates.zoomScale > 1 && 'pointer-events-none md:pointer-events-none')}
             >
-                {
-                    Array.from({ length: pdfDetails.totalPages }, (_, index) => (
-                        <MemoizedPdfPage
-                            key={index}
-                            height={pdfDetails.height * scale}
-                            zoomScale={debouncedZoom}
-                            page={index + 1}
-                            isPageInViewRange={isPageInViewRange(index)}
-                            isPageInView={isPageInView(index)}
-                        />
-                    ))
-                }
-            </HTMLFlipBook >
-            {/* <p className="text-background absolute z-50 top-0 -left-10">{viewRange[0] + '-' + viewRange[1]}</p> */}
+                {Array.from({ length: pdfDetails.totalPages }, (_, index) => (
+                    <MemoizedPdfPage
+                        key={index}
+                        height={pdfDetails.height * scale}
+                        zoomScale={debouncedZoom}
+                        page={index + 1}
+                        isPageInViewRange={isPageInViewRange(index)}
+                        isPageInView={isPageInView(index)}
+                    />
+                ))}
+            </HTMLFlipBook>
         </div>
-    )
-})
+    );
+});
 
-FlipbookLoader.displayName = 'FlipbookLoader'
+FlipbookLoader.displayName = 'FlipbookLoader';
 
-export default FlipbookLoader
+export default FlipbookLoader;

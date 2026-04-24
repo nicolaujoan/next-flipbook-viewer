@@ -50,7 +50,6 @@ const FlipbookLoader = forwardRef(({ pdfDetails, scale, viewerStates, setViewerS
         <div className="relative">
             <HTMLFlipBook
                 ref={ref}
-                key={scale}
                 startPage={viewerStates.currentPageIndex}
                 width={pdfDetails.width * scale * 5}
                 height={pdfDetails.height * scale * 5}

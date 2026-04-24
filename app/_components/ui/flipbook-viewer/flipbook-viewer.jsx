@@ -6,30 +6,26 @@ import Flipbook from "./flipbook/flipbook";
 import { TransformWrapper } from "react-zoom-pan-pinch";
 import { Document, pdfjs } from "react-pdf";
 import PdfLoading from "./pad-loading/pdf-loading";
+import useScreenSize from "../.././../_hooks/use-screensize";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Worker must be set after the import, not before.
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const FlipbookViewer = ({ pdfUrl, shareUrl, className, disableShare }) => {
   const containerRef = useRef();
   const flipbookRef  = useRef();
 
-  const [pdfLoading, setPdfLoading]   = useState(true);
-  const [pdfDetails, setPdfDetails]   = useState(null);
-  const [screenfull, setScreenfull]   = useState(null);
-  const [viewerStates, setViewerStates] = useState({
-    currentPageIndex: 0,
-    zoomScale: 1,
-  });
+  const { width: screenWidth }          = useScreenSize();
+  const isMobile                        = screenWidth > 0 && screenWidth < 768;
 
-  // screenfull accesses `document` on import — lazy-load it client-side only
-  // to avoid crashes during SSR / iOS hydration.
+  const [pdfLoading, setPdfLoading]     = useState(true);
+  const [pdfDetails, setPdfDetails]     = useState(null);
+  const [screenfull, setScreenfull]     = useState(null);
+  const [viewerStates, setViewerStates] = useState({ currentPageIndex: 0, zoomScale: 1 });
+
   useEffect(() => {
-    import('screenfull').then((mod) => {
-      setScreenfull(mod.default ?? mod);
-    });
+    import('screenfull').then((mod) => setScreenfull(mod.default ?? mod));
   }, []);
 
   const onDocumentLoadSuccess = useCallback(async (document) => {
@@ -46,6 +42,28 @@ const FlipbookViewer = ({ pdfUrl, shareUrl, className, disableShare }) => {
     }
   }, []);
 
+  const inner = pdfDetails && !pdfLoading && screenfull !== null && (
+    <div className="w-full relative bg-foreground flex flex-col justify-between">
+      <Flipbook
+        viewerStates={viewerStates}
+        setViewerStates={setViewerStates}
+        flipbookRef={flipbookRef}
+        screenfull={screenfull}
+        pdfDetails={pdfDetails}
+      />
+      <Toolbar
+        viewerStates={viewerStates}
+        setViewerStates={setViewerStates}
+        containerRef={containerRef}
+        flipbookRef={flipbookRef}
+        screenfull={screenfull}
+        pdfDetails={pdfDetails}
+        shareUrl={shareUrl}
+        disableShare={disableShare}
+      />
+    </div>
+  );
+
   return (
     <div ref={containerRef} className={cn(
       "relative h-[20.163rem] xs:h-[25.163rem] lg:h-[33.163rem] xl:h-[34.66rem] bg-foreground w-full overflow-hidden",
@@ -53,7 +71,7 @@ const FlipbookViewer = ({ pdfUrl, shareUrl, className, disableShare }) => {
     )}>
       {pdfLoading && <PdfLoading />}
       <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess} loading={<></>}>
-        {pdfDetails && !pdfLoading && screenfull !== null && (
+        {isMobile ? inner : (
           <TransformWrapper
             doubleClick={{ disabled: true }}
             pinch={{ step: 2 }}
@@ -65,25 +83,7 @@ const FlipbookViewer = ({ pdfUrl, shareUrl, className, disableShare }) => {
               setViewerStates(prev => ({ ...prev, zoomScale: state.scale }))
             }
           >
-            <div className="w-full relative bg-foreground flex flex-col justify-between">
-              <Flipbook
-                viewerStates={viewerStates}
-                setViewerStates={setViewerStates}
-                flipbookRef={flipbookRef}
-                screenfull={screenfull}
-                pdfDetails={pdfDetails}
-              />
-              <Toolbar
-                viewerStates={viewerStates}
-                setViewerStates={setViewerStates}
-                containerRef={containerRef}
-                flipbookRef={flipbookRef}
-                screenfull={screenfull}
-                pdfDetails={pdfDetails}
-                shareUrl={shareUrl}
-                disableShare={disableShare}
-              />
-            </div>
+            {inner}
           </TransformWrapper>
         )}
       </Document>

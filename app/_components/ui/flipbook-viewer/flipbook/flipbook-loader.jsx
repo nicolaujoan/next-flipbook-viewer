@@ -1,4 +1,4 @@
-import React, { forwardRef, memo, useCallback } from 'react'
+import React, { forwardRef, memo, useCallback, useMemo } from 'react'
 import HTMLFlipBook from 'react-pageflip'
 import PdfPage from './pdf-page'
 import { useDebounce } from '../../../../_hooks/use-debounce';
@@ -7,33 +7,44 @@ import useScreenSize from '../../../../_hooks/use-screensize';
 
 const MemoizedPdfPage = memo(PdfPage)
 
-// Pages kept in canvas on each side of the current page.
-// Mobile gets a tighter window to stay under iOS canvas memory limits.
 const VIEW_AHEAD_DESKTOP = 4;
 const VIEW_AHEAD_MOBILE  = 2;
 
 const FlipbookLoader = forwardRef(({ pdfDetails, scale, viewerStates, setViewerStates, viewRange, setViewRange }, ref) => {
     const { width } = useScreenSize();
-    const isMobile = width > 0 && width < 768;
+    const isMobile  = width > 0 && width < 768;
     const viewAhead = isMobile ? VIEW_AHEAD_MOBILE : VIEW_AHEAD_DESKTOP;
 
     const debouncedZoom = useDebounce(viewerStates.zoomScale, 500);
 
-    const isPageInViewRange = (index) => index >= viewRange[0] && index <= viewRange[1];
-    const isPageInView      = (index) => viewerStates.currentPageIndex === index || viewerStates.currentPageIndex + 1 === index;
+    // Stable page indices array — only rebuilt when totalPages changes.
+    const pageIndices = useMemo(
+        () => Array.from({ length: pdfDetails.totalPages }, (_, i) => i),
+        [pdfDetails.totalPages]
+    );
+
+    const isPageInViewRange = useCallback(
+        (index) => index >= viewRange[0] && index <= viewRange[1],
+        [viewRange]
+    );
+    const isPageInView = useCallback(
+        (index) => viewerStates.currentPageIndex === index || viewerStates.currentPageIndex + 1 === index,
+        [viewerStates.currentPageIndex]
+    );
 
     const onFlip = useCallback((e) => {
-        let newViewRange;
-        if (e.data > viewerStates.currentPageIndex) {
-            newViewRange = [viewRange[0], Math.max(Math.min(e.data + viewAhead, pdfDetails.totalPages), viewRange[1])];
-        } else if (e.data < viewerStates.currentPageIndex) {
-            newViewRange = [Math.min(Math.max(e.data - viewAhead, 0), viewRange[0]), viewRange[1]];
-        } else {
-            newViewRange = viewRange;
-        }
-        setViewRange(newViewRange);
-        setViewerStates({ ...viewerStates, currentPageIndex: e.data });
-    }, [viewerStates, viewRange, viewAhead, setViewRange, setViewerStates, pdfDetails.totalPages]);
+        const newPage = e.data;
+        const newViewRange = [
+            Math.max(newPage - viewAhead, 0),
+            Math.min(newPage + viewAhead, pdfDetails.totalPages),
+        ];
+        // Defer state update until after the flip animation frame to avoid
+        // triggering a React reconciliation while the GPU is animating.
+        requestAnimationFrame(() => {
+            setViewRange(newViewRange);
+            setViewerStates(prev => ({ ...prev, currentPageIndex: newPage }));
+        });
+    }, [viewAhead, pdfDetails.totalPages, setViewRange, setViewerStates]);
 
     return (
         <div className="relative">
@@ -45,7 +56,7 @@ const FlipbookLoader = forwardRef(({ pdfDetails, scale, viewerStates, setViewerS
                 height={pdfDetails.height * scale * 5}
                 size="stretch"
                 drawShadow={false}
-                flippingTime={700}
+                flippingTime={isMobile ? 0 : 700}
                 usePortrait={isMobile}
                 singlePage={isMobile}
                 showCover={true}
@@ -54,7 +65,7 @@ const FlipbookLoader = forwardRef(({ pdfDetails, scale, viewerStates, setViewerS
                 disableFlipByClick={isMobile}
                 className={cn(viewerStates.zoomScale > 1 && 'pointer-events-none md:pointer-events-none')}
             >
-                {Array.from({ length: pdfDetails.totalPages }, (_, index) => (
+                {pageIndices.map((index) => (
                     <MemoizedPdfPage
                         key={index}
                         height={pdfDetails.height * scale}

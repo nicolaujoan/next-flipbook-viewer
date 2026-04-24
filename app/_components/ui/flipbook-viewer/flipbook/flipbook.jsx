@@ -58,7 +58,7 @@ const Flipbook = memo(({ viewerStates, setViewerStates, flipbookRef, pdfDetails,
             <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }} contentStyle={{ width: "100%", height: "100%" }}>
                 <div className='overflow-hidden flex justify-center items-center h-full w-full'>
                     {pdfDetails && scale && (
-                        <div style={wrapperCss}>
+                        <div style={{ ...wrapperCss, touchAction: 'pan-y', willChange: 'transform' }}>
                             <FlipbookLoader
                                 ref={flipbookRef}
                                 pdfDetails={pdfDetails}

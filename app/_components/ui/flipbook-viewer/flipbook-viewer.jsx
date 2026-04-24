@@ -17,7 +17,8 @@ const FlipbookViewer = ({ pdfUrl, shareUrl, className, disableShare }) => {
   const flipbookRef  = useRef();
 
   const { width: screenWidth }          = useScreenSize();
-  const isMobile                        = screenWidth > 0 && screenWidth < 768;
+  const screenReady                     = screenWidth > 0;
+  const isMobile                        = screenReady && screenWidth < 768;
 
   const [pdfLoading, setPdfLoading]     = useState(true);
   const [pdfDetails, setPdfDetails]     = useState(null);
@@ -42,7 +43,7 @@ const FlipbookViewer = ({ pdfUrl, shareUrl, className, disableShare }) => {
     }
   }, []);
 
-  const inner = pdfDetails && !pdfLoading && screenfull !== null && (
+  const inner = pdfDetails && !pdfLoading && screenfull !== null && screenReady && (
     <div className="w-full relative bg-foreground flex flex-col justify-between">
       <Flipbook
         viewerStates={viewerStates}

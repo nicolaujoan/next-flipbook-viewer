@@ -12,7 +12,11 @@ const VIEW_AHEAD_MOBILE  = 2;
 
 const FlipbookLoader = forwardRef(({ pdfDetails, scale, viewerStates, setViewerStates, viewRange, setViewRange }, ref) => {
     const { width } = useScreenSize();
-    const isMobile  = width > 0 && width < 768;
+
+    // width=0 means useScreenSize hasn't measured yet — don't render until known
+    // to avoid a desktop→mobile prop flip that corrupts react-pageflip internals.
+    const ready    = width > 0;
+    const isMobile = ready && width < 768;
     const viewAhead = isMobile ? VIEW_AHEAD_MOBILE : VIEW_AHEAD_DESKTOP;
 
     const debouncedZoom = useDebounce(viewerStates.zoomScale, 500);
@@ -45,6 +49,8 @@ const FlipbookLoader = forwardRef(({ pdfDetails, scale, viewerStates, setViewerS
             setViewerStates(prev => ({ ...prev, currentPageIndex: newPage }));
         });
     }, [viewAhead, pdfDetails.totalPages, setViewRange, setViewerStates]);
+
+    if (!ready) return null;
 
     return (
         <div className="relative">

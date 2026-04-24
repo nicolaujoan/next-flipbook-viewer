@@ -4,6 +4,7 @@ import { cn } from '../../_lib/utils';
 import NprogressProviders from "../../_providers/nprogress-provider";
 import ThemeProvider from "../../_providers/theme-provider";
 import { Toaster } from "../../_components/ui/toaster";
+import ErrorDebugOverlay from "../../_components/error-debug-overlay";
 
 const fontSans = FontSans({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -42,7 +43,9 @@ export default async function RootLayout({ children }) {
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <NprogressProviders>
           <ThemeProvider attribute="class" defaultTheme="dark">
-            {children}
+            <ErrorDebugOverlay>
+              {children}
+            </ErrorDebugOverlay>
             <Toaster />
           </ThemeProvider>
         </NprogressProviders>

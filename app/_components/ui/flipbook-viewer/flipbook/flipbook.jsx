@@ -6,7 +6,7 @@ import FlipbookLoader from './flipbook-loader';
 import { cn } from '../../../../_lib/utils';
 import { TransformComponent } from 'react-zoom-pan-pinch';
 
-const Flipbook = memo(({ viewerStates, setViewerStates, flipbookRef, pdfDetails }) => {
+const Flipbook = memo(({ viewerStates, setViewerStates, flipbookRef, pdfDetails, screenfull }) => {
     const { ref, width, height, refreshSize } = useRefSize();
     const { width: screenWidth } = useScreenSize();
     const isMobile = screenWidth > 0 && screenWidth < 768;
